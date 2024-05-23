@@ -104,11 +104,14 @@ document.addEventListener("DOMContentLoaded", () => {
         // Loop through the current question `choices`.
         // For each choice create a new radio input with a label, and append it to the choice container.
         // Each choice should be displayed as a radio input element with a label:
-        /* 
-          <input type="radio" name="choice" value="CHOICE TEXT HERE">
-          <label>CHOICE TEXT HERE</label>
-        <br>
-      */
+        question.choices.forEach((choice, index) => {
+            const liElement = document.createElement("li");
+            liElement.innerHTML = `<input type="radio" name="choice" id="${index}" value="${choice}">
+            <label for="${index}">${choice}</label>
+          <br>`;
+            choiceContainer.append(liElement);
+        });
+
         // Hint 1: You can use the `document.createElement()` method to create a new element.
         // Hint 2: You can use the `element.type`, `element.name`, and `element.value` properties to set the type, name, and value of an element.
         // Hint 3: You can use the `element.appendChild()` method to append an element to the choices container.
