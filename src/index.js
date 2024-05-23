@@ -32,12 +32,12 @@ document.addEventListener("DOMContentLoaded", () => {
         new Question("What is the mass–energy equivalence equation?", ["E = mc^2", "E = m*c^2", "E = m*c^3", "E = m*c"], "E = mc^2", 3),
         // Add more questions here
     ];
-    const quizDuration = 120; // 120 seconds (2 minutes)
+    const QUIZ_DURATION = 120; // 120 seconds (2 minutes)
 
     /************  QUIZ INSTANCE  ************/
 
     // Create a new Quiz instance object
-    const quiz = new Quiz(questions, quizDuration, quizDuration);
+    const quiz = new Quiz(questions, QUIZ_DURATION, QUIZ_DURATION);
     // Shuffle the quiz questions
     quiz.shuffleQuestions();
 
@@ -58,11 +58,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /************  TIMER  ************/
 
-    let timer;
+    let timer = setInterval(() => {
+        quiz.timeRemaining--;
+        updateTimer(quiz.timeRemaining);
+    }, 1000);
 
+    function updateTimer(remainingTime) {
+        const minutes = Math.floor(remainingTime / 60)
+            .toString()
+            .padStart(2, "0");
+        const seconds = (remainingTime % 60).toString().padStart(2, "0");
+
+        // Display the time remaining in the time remaining container
+        timeRemainingContainer.innerText = `${minutes}:${seconds}`;
+
+        if (remainingTime === 0) {
+            showResults();
+        }
+    }
     /************  EVENT LISTENERS  ************/
 
     nextButton.addEventListener("click", nextButtonHandler);
+    restartButton.addEventListener("click", restartQuiz);
 
     /************  FUNCTIONS  ************/
 
@@ -161,6 +178,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function showResults() {
         // YOUR CODE HERE:
         //
+        clearInterval(timer);
         // 1. Hide the quiz view (div#quizView)
         quizView.style.display = "none";
 
@@ -170,5 +188,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // 3. Update the result container (div#result) inner text to show the number of correct answers out of total questions
         resultContainer.innerText = `You scored ${quiz.correctAnswers} out of ${quiz.questions.length} correct answers!`; // This value is hardcoded as a placeholder
+    }
+
+    function restartQuiz() {
+        quiz.currentQuestionIndex = 0;
+        quiz.correctAnswers = 0;
+        quiz.shuffleQuestions();
+        quizView.style.display = "block";
+        endView.style.display = "none";
+        restartButton.style.display = "none";
+        quiz.timeRemaining = QUIZ_DURATION;
+        updateTimer(QUIZ_DURATION);
+
+        setInterval(() => {
+            quiz.timeRemaining--;
+            updateTimer(quiz.timeRemaining);
+        }, 1000);
+
+        showQuestion();
     }
 });
